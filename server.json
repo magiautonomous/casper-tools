@@ -5,9 +5,8 @@
   "description": "8 agent utilities: JSON inspection, regex, cron, hash, base64, URL, color, diff.",
   "version": "1.0.0",
   "repository": {
-    "url": "https://github.com/magiautonomous/Casper",
-    "source": "github",
-    "subfolder": "mcp-server"
+    "url": "https://github.com/magiautonomous/casper-tools",
+    "source": "github"
   },
   "remotes": [
     {
