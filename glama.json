@@ -1,4 +1,21 @@
 {
   "$schema": "https://glama.ai/mcp/schemas/server.json",
-  "maintainers": ["magiautonomous"]
+  "maintainers": ["magiautonomous"],
+  "displayName": "Casper Tools",
+  "description": "8 agent utility functions over streamable HTTP: json_inspect, regex_test, cron_parse, hash_compute, base64_encode/decode, url_analyze, color_convert, text_diff. No API keys required.",
+  "categories": ["developer-tools", "data-conversion", "productivity"],
+  "license": "mit",
+  "homepage": "https://github.com/magiautonomous/casper-tools",
+  "environmentVariables": [],
+  "build": {
+    "type": "npm",
+    "command": "npm install",
+    "output": "."
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://virtue-hardly-skills-calling.trycloudflare.com/mcp"
+    }
+  ]
 }
