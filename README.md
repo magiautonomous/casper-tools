@@ -17,6 +17,31 @@ keys.** Free to use.
 https://determines-product-administration-farmer.trycloudflare.com
 ```
 
+
+## Quick Example
+
+Connect any MCP client and call tools with standard JSON-RPC over Streamable
+HTTP. No auth, no keys, no setup.
+
+**Initialize the session:**
+
+
+
+**Call  on a sample payload:**
+
+
+
+Response includes , , , , and .
+
+**Call  on a string:**
+
+
+
+Response returns the hex-encoded digest plus algorithm + input length.
+
+Full list of 12 tools, their input schemas, and live response examples are
+available from the server itself via  once connected.
+
 ## Tools
 
 | Tool              | What it does                                    |
