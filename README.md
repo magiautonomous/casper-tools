@@ -42,6 +42,36 @@ Response returns the hex-encoded digest plus algorithm + input length.
 Full list of 12 tools, their input schemas, and live response examples are
 available from the server itself via  once connected.
 
+## Quick Example
+
+Connect any MCP client and call tools with standard JSON-RPC over Streamable
+HTTP. No auth, no keys, no setup.
+
+**Initialize the session:**
+
+```json
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}
+```
+
+**Call `json_inspect` on a sample payload:**
+
+```json
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"json_inspect","arguments":{"data":{"user":"alice","role":"admin"}}}}
+```
+
+Response includes `type`, `summary`, `keyCount`, `depth`, and `hasArrays`.
+
+**Call `hash_compute` on a string:**
+
+```json
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"hash_compute","arguments":{"input":"hello world","algorithm":"sha-256"}}}}
+```
+
+Response returns the hex-encoded digest plus algorithm + input length.
+
+Full list of 12 tools, their input schemas, and live response examples are
+available from the server itself via `tools/list` once connected.
+
 ## Tools
 
 | Tool              | What it does                                    |
