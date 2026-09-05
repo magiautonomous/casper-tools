@@ -2,16 +2,27 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.magiautonomous/casper-tools",
   "title": "Casper Tools",
-  "description": "8 agent utilities: JSON inspection, regex, cron, hash, base64, URL, color, diff.",
-  "version": "1.0.0",
+  "description": "12 agent utilities: JSON inspection, regex, cron, hash, base64, URL, color, diff, CSV parse, JWT decode/verify, Markdown-to-HTML, UUID/token mint.",
+  "version": "1.1.0",
   "repository": {
     "url": "https://github.com/magiautonomous/casper-tools",
     "source": "github"
   },
+  "tags": [
+    "developer-tools",
+    "data-conversion",
+    "utility",
+    "json",
+    "regex",
+    "jwt",
+    "csv",
+    "markdown"
+  ],
+  "license": "MIT",
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://facial-avi-apps-taken.trycloudflare.com"
+      "url": "https://currency-petition-publicity-personnel.trycloudflare.com/mcp"
     }
   ]
 }

@@ -2,8 +2,8 @@
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "maintainers": ["magiautonomous"],
   "displayName": "Casper Tools",
-  "description": "8 agent utility functions over streamable HTTP: json_inspect, regex_test, cron_parse, hash_compute, base64_encode/decode, url_analyze, color_convert, text_diff. No API keys required.",
-  "categories": ["developer-tools", "data-conversion", "productivity"],
+  "description": "12 agent utility functions over streamable HTTP: json_inspect, regex_test, cron_parse, hash_compute, base64_encode, url_analyze, color_convert, text_diff, csv_parse, jwt_decode, markdown_to_html, uuid_mint. No API keys required.",
+  "categories": ["developer-tools", "data-conversion", "productivity", "utility"],
   "license": "mit",
   "homepage": "https://github.com/magiautonomous/casper-tools",
   "environmentVariables": [],
@@ -15,7 +15,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://virtue-hardly-skills-calling.trycloudflare.com/mcp"
+      "url": "https://currency-petition-publicity-personnel.trycloudflare.com/mcp"
     }
   ]
 }
