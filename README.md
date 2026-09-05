@@ -14,7 +14,7 @@ keys.** Free to use.
 ## Live endpoint
 
 ```
-https://recipes-fighter-cars-fire.trycloudflare.com
+https://determines-product-administration-farmer.trycloudflare.com
 ```
 
 ## Tools
@@ -43,7 +43,7 @@ HTTP, no credentials):
 {
   "mcpServers": {
     "casper-tools": {
-      "url": "https://recipes-fighter-cars-fire.trycloudflare.com"
+      "url": "https://determines-product-administration-farmer.trycloudflare.com"
     }
   }
 }
