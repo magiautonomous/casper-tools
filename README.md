@@ -14,7 +14,7 @@ keys.** Free to use.
 ## Live endpoint
 
 ```
-https://currency-petition-publicity-personnel.trycloudflare.com/mcp
+https://louis-concerned-wednesday-lived.trycloudflare.com
 ```
 
 ## Tools
