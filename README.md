@@ -43,7 +43,7 @@ HTTP, no credentials):
 {
   "mcpServers": {
     "casper-tools": {
-      "url": "https://currency-petition-publicity-personnel.trycloudflare.com/mcp"
+      "url": "https://louis-concerned-wednesday-lived.trycloudflare.com/mcp"
     }
   }
 }
