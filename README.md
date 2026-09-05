@@ -13,7 +13,7 @@ keys.** Free to use.
 ## Live endpoint
 
 ```
-https://virtue-hardly-skills-calling.trycloudflare.com/mcp
+https://facial-avi-apps-taken.trycloudflare.com
 ```
 
 ## Tools
