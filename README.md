@@ -43,7 +43,7 @@ HTTP, no credentials):
 {
   "mcpServers": {
     "casper-tools": {
-      "url": "https://louis-concerned-wednesday-lived.trycloudflare.com/mcp"
+      "url": "https://garage-layout-recovered-savings.trycloudflare.com"
     }
   }
 }
