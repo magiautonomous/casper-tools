@@ -14,7 +14,7 @@ keys.** Free to use.
 ## Live endpoint
 
 ```
-https://garage-layout-recovered-savings.trycloudflare.com
+https://recipes-fighter-cars-fire.trycloudflare.com
 ```
 
 ## Tools
@@ -43,7 +43,7 @@ HTTP, no credentials):
 {
   "mcpServers": {
     "casper-tools": {
-      "url": "https://garage-layout-recovered-savings.trycloudflare.com"
+      "url": "https://recipes-fighter-cars-fire.trycloudflare.com"
     }
   }
 }
