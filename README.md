@@ -17,31 +17,6 @@ keys.** Free to use.
 https://determines-product-administration-farmer.trycloudflare.com
 ```
 
-
-## Quick Example
-
-Connect any MCP client and call tools with standard JSON-RPC over Streamable
-HTTP. No auth, no keys, no setup.
-
-**Initialize the session:**
-
-
-
-**Call  on a sample payload:**
-
-
-
-Response includes , , , , and .
-
-**Call  on a string:**
-
-
-
-Response returns the hex-encoded digest plus algorithm + input length.
-
-Full list of 12 tools, their input schemas, and live response examples are
-available from the server itself via  once connected.
-
 ## Quick Example
 
 Connect any MCP client and call tools with standard JSON-RPC over Streamable
@@ -64,7 +39,7 @@ Response includes `type`, `summary`, `keyCount`, `depth`, and `hasArrays`.
 **Call `hash_compute` on a string:**
 
 ```json
-{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"hash_compute","arguments":{"input":"hello world","algorithm":"sha-256"}}}}
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"hash_compute","arguments":{"input":"hello world","algorithm":"sha-256"}}}
 ```
 
 Response returns the hex-encoded digest plus algorithm + input length.
