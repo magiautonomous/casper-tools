@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.magiautonomous/casper-tools",
   "title": "Casper Tools",
-  "description": "Agent utilities: JSON, regex, cron, hash, base64, URL, color, CSV, JWT, Markdown, UUID, semver, time",
-  "version": "1.2.2",
+  "description": "Utilities: JSON, regex, cron, hash, base64, URL, color, diff, CSV, JWT, UUID, Markdown, semver, time",
+  "version": "1.2.3",
   "repository": {
     "url": "https://github.com/magiautonomous/Casper",
     "source": "github",
