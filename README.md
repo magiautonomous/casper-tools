@@ -80,6 +80,10 @@ node probe.js <endpoint>   # e2e MCP initialize + tools/call over HTTP
 
 - `DEMO.md` — 90-second live walkthrough: connect, pick a tool, raw Streamable
   HTTP `curl` call against the public endpoint, verified output.
+- **Feature story** — [Casper Tools on the official MCP Registry](
+  https://tanerdurmaz.github.io/agentic-web-blog/posts/2026-09-05-casper-tools-mcp-registry.html)
+  (Agentic Web Blog) — how these utilities ship on the official registry and
+  why zero-setup MCP matters for the agentic web.
 
 ## Analytics
 
