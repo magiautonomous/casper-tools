@@ -1,8 +1,11 @@
 # Casper Tools MCP Server
 
+> 16 zero-setup MCP utilities for AI agents — JSON, regex, cron, hashing,
+> semver, JWT, CSV, Markdown and more. No API keys, no auth, no install weight.
+
 A Model Context Protocol (MCP) server exposing **16** small, dependency-light
-utilities that AI agents reach for constantly. Streamable HTTP transport, no
-auth, no API keys, free.
+utilities that AI agents reach for constantly. Streamable HTTP transport, drop it
+into any MCP client in seconds. No auth, no API keys, free.
 
 **Endpoint:** `POST /mcp` (also accepted at the bare host root) on port 3000.
 
@@ -26,6 +29,17 @@ auth, no API keys, free.
 | `semver_satisfies` | Check a version against an npm-style range       |
 | `semver_bump`      | Increment major/minor/patch/prerelease           |
 | `semver_max`       | Pick the best satisfying version for an upgrade  |
+
+## Why Casper Tools
+
+- **Zero setup** — one `POST /mcp` endpoint, no auth, no API keys, no cloud
+  account. Point any MCP client at it and go.
+- **Dependency-light** — pure, small handlers tuned for the utilities agents
+  reach for dozens of times a day.
+- **Drop-in** — works with Claude Desktop, Cursor, and any MCP-capable agent
+  over Streamable HTTP.
+- **Batteries included** — semver, JWT, CSV, Markdown, color, UUID and JSON
+  tooling covers the boring-but-common cases so your agent doesn't reinvent them.
 
 ## Run it
 
