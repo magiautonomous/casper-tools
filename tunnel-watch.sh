@@ -28,21 +28,34 @@ is_live() {
 
 repoint() {
   local new="$1"
-  python3 - "$MCP_DIR/server.json" "$REPO_DIR/server.json" "$REPO_DIR/glama.json" "$REPO_DIR/README.md" "$new" <<'PYEOF'
+  python3 - "$MCP_DIR/server.json" "$REPO_DIR/server.json" "$REPO_DIR/glama.json" "$REPO_DIR/README.md" "$REPO_DIR/.well-known/mcp.json" "$new" <<'PYEOF'
 import json, sys, re
-deployed, repo, glama, readme, newurl = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
+deployed, repo, glama, readme, wellknown, newurl = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6]
 needle = "trycloudflare.com"
 changed = False
-for p in (deployed, repo, glama):
-    with open(p) as f:
-        d = json.load(f)
+
+def bump_path(d, p):
+    """Rewrite streamable-http remotes and bare url keys (well-known file)."""
+    global changed
+    hit = False
     for r in d.get("remotes", []):
         if r.get("type") == "streamable-http" and r.get("url", "").endswith(needle):
             r["url"] = newurl
-            changed = True
-    with open(p, "w") as f:
-        json.dump(d, f, indent=2)
-        f.write("\n")
+            hit = True
+    for name, svc in d.get("mcpServers", {}).items():
+        if svc.get("url", "").endswith(needle):
+            svc["url"] = newurl
+            hit = True
+    if hit:
+        changed = True
+        with open(p, "w") as f:
+            json.dump(d, f, indent=2)
+            f.write("\n")
+
+for p in (deployed, repo, glama, wellknown):
+    with open(p) as f:
+        d = json.load(f)
+    bump_path(d, p)
 with open(readme) as f:
     readme_text = f.read()
 new_readme, n = re.subn(r'https://[a-z0-9-]+\.trycloudflare\.com(?:/mcp)?', newurl, readme_text)
@@ -77,8 +90,8 @@ fi
 repoint "$NEW" || exit 0
 
 cd "$REPO_DIR" || exit 1
-git add server.json glama.json README.md >/dev/null 2>&1
-git commit -m "chore: repoint MCP registry + Glama + README to current tunnel URL" >/dev/null 2>&1 || true
+git add server.json glama.json README.md .well-known/mcp.json >/dev/null 2>&1
+git commit -m "chore: repoint MCP registry + Glama + README + .well-known to current tunnel URL" >/dev/null 2>&1 || true
 git push origin main >/dev/null 2>&1 || exit 1
 
 printf '%s\n' "$NEW" > "$STATE"
@@ -99,8 +112,8 @@ git tag "$NEWTAG" >/dev/null 2>&1
 git push origin "$NEWTAG" >/dev/null 2>&1 || exit 1
 
 if [ -f "$ANALYTICS" ]; then
-  printf '{"event":"tunnel_rotation","url":"%s","tag":"%s","ts":"%s","surfaces":"registry+glama+readme+mcprepository"}\n' \
+  printf '{"event":"tunnel_rotation","url":"%s","tag":"%s","ts":"%s","surfaces":"registry+glama+readme+wellknown+mcprepository"}\n' \
     "$NEW" "$NEWTAG" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$ANALYTICS"
 fi
 
-echo "republished to $NEWTAG url=$NEW surfaces=registry+glama+readme"
+echo "republished to $NEWTAG url=$NEW surfaces=registry+glama+readme+wellknown"

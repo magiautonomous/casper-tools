@@ -1,15 +1,21 @@
 {
-  "name": "casper-tools-mcp",
-  "version": "1.0.0",
-  "description": "MCP server exposing 8 agentic utilities: JSON inspection, regex testing, cron parsing, hashing, base64 codec, URL analysis, color conversion, and text diffing",
+  "name": "casper-tools",
+  "version": "1.1.0",
+  "description": "Casper Tools MCP server - 12 agent utilities over Model Context Protocol (Streamable HTTP): JSON inspect, regex test, cron parse, hash, base64, URL analyze, color convert, text diff, CSV parse, JWT decode/verify, Markdown-to-HTML, UUID/token minting",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js"
   },
   "bin": {
-    "casper-tools-mcp": "server.js"
+    "casper-tools": "server.js"
   },
+  "files": [
+    "server.js",
+    "tools.js",
+    "x402-gate.js",
+    "server.json"
+  ],
   "engines": {
     "node": ">=18"
   },
@@ -25,7 +31,14 @@
     "base64",
     "url",
     "color",
-    "diff"
+    "diff",
+    "csv",
+    "jwt",
+    "markdown",
+    "uuid",
+    "developer-tools",
+    "utility",
+    "streamable-http"
   ],
   "license": "MIT",
   "dependencies": {

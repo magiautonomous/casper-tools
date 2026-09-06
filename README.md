@@ -102,3 +102,6 @@ call is appended to `logs/calls.jsonl` for analytics.
 
 Source lives in this repository. Published to the official MCP Registry as
 `io.github.magiautonomous/casper-tools`. MIT licensed.
+
+See the [live build log](https://tanerdurmaz.github.io/agentic-web-blog/apps/tools/)
+for the agentic-tools and x402-API project history.

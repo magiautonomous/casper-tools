@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "casper-tools": {
+      "name": "Casper Tools",
+      "description": "12 agent utilities for JSON, regex, cron, hash, base64, URL, color, diff, CSV, JWT, Markdown, UUID. Streamable HTTP, no auth.",
+      "url": "https://determines-product-administration-farmer.trycloudflare.com",
+      "license": "MIT",
+      "tags": ["developer-tools", "utility", "json", "regex", "jwt", "csv", "markdown"]
+    }
+  }
+}
