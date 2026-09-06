@@ -6,6 +6,7 @@ try {
 } catch (e) {
   z = require('@modelcontextprotocol/sdk/node_modules/zod');
 }
+const semver = require('./semver-engine.js');
 
 const trunc = (s, n) => (s.length > n ? s.substring(0, n) + '...' : s);
 
@@ -117,6 +118,90 @@ const TOOL_CSV_PARSE = {
 
 // ---- uuid_mint -------------------------------------------------------------
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// ---- semver_* (SemVerForge engine) -----------------------------------------
+// Correct SemVer 2.0.0 precedence + npm-style range checking, from the
+// pure-JS semver-engine module (no deps).
+
+const TOOL_SEMVER_COMPARE = {
+  name: 'semver_compare',
+  description: 'Compare two semantic versions with correct SemVer 2.0.0 precedence (e.g. 1.10.0 > 1.9.0 — plain string sort is wrong). Returns -1/0/1, the human relation, and the difference level (major, minor, patch, prerelease).',
+  inputSchema: {
+    a: z.string().describe('First version, e.g. 1.10.0'),
+    b: z.string().describe('Second version, e.g. 1.9.9')
+  },
+  async run({ a, b }) {
+    if (!semver.parse(a) || !semver.parse(b)) {
+      return { content: [{ type: 'text', text: `Invalid version: "${a}" or "${b}". Expected major.minor.patch with optional -prerelease/+build.` }], isError: true };
+    }
+    const c = semver.compare(a, b);
+    const relation = c < 0 ? `${a} < ${b}` : c > 0 ? `${a} > ${b}` : `${a} = ${b}`;
+    return { content: [{ type: 'text', text: `compare(${a}, ${b}) = ${c}\nRelation: ${relation}\nDifference level: ${semver.diff(a, b) || 'none (equal)'}` }] };
+  }
+};
+
+const TOOL_SEMVER_SATISFIES = {
+  name: 'semver_satisfies',
+  description: 'Test whether a version satisfies an npm-style version range (caret ^, tilde ~, >=, <=, <, >, =, hyphen ranges, x-wildcards like 1.2.x, &&/space AND and || OR). Returns whether it satisfies plus the expanded operator bounds so the caller can see why. Prerelease versions only match a range that names their major.minor.patch with an explicit prerelease (same as npm).',
+  inputSchema: {
+    version: z.string().describe('The version to test, e.g. 1.9.9'),
+    range: z.string().describe('The range to test against, e.g. "^1.2.3 || ~2.0.0"')
+  },
+  async run({ version, range }) {
+    if (!semver.parse(version)) {
+      return { content: [{ type: 'text', text: `Invalid version: "${version}"` }], isError: true };
+    }
+    const ok = semver.satisfies(version, range);
+    const head = ok ? `YES: ${version} satisfies "${range}"` : `NO: ${version} does NOT satisfy "${range}"`;
+    return { content: [{ type: 'text', text: `${head}\nRange expanded: ${semver.explainRange(range)}` }] };
+  }
+};
+
+const TOOL_SEMVER_BUMP = {
+  name: 'semver_bump',
+  description: 'Increment a semantic version to the next release level: major, minor, patch, premajor, preminor, prepatch, or prerelease. An optional identifier (e.g. beta) seeds/steps the prerelease tag. Returns the resulting version string.',
+  inputSchema: {
+    version: z.string().describe('Starting version, e.g. 1.2.3'),
+    level: z.enum(['major', 'minor', 'patch', 'premajor', 'preminor', 'prepatch', 'prerelease']).default('patch').describe('Which segment to increment'),
+    identifier: z.string().optional().describe('Prerelease identifier, e.g. beta, rc (optional)')
+  },
+  async run({ version, level, identifier }) {
+    const next = semver.inc(version, level, identifier);
+    if (!next) {
+      return { content: [{ type: 'text', text: `Invalid version: "${version}" or unknown level "${level}". Levels: major, minor, patch, premajor, preminor, prepatch, prerelease.` }], isError: true };
+    }
+    let note = '';
+    if (level === 'prerelease' && identifier) {
+      note = '\n(identifier "' + identifier + '" started a fresh prerelease series)';
+    }
+    return { content: [{ type: 'text', text: `inc(${version}, ${level}${identifier ? ', ' + identifier : ''}) = ${semver.format(next)}` + note }] };
+  }
+};
+
+const TOOL_SEMVER_MAX = {
+  name: 'semver_max',
+  description: 'Pick the BEST version from a comma-separated list that satisfies a range — the highest satisfying version (upgrade target). Correctly excludes inapplicable prereleases (npm rules) and rejects invalid list entries. Returns the max satisfying version or "none".',
+  inputSchema: {
+    range: z.string().describe('npm-style range, e.g. "^1.0.0"'),
+    versions: z.string().describe('Comma-separated version list, e.g. "1.4.1, 1.5.0-beta.1, 1.6.0"')
+  },
+  async run({ range, versions }) {
+    const list = String(versions || '').split(',').map((s) => s.trim()).filter(Boolean);
+    const valid = list.filter((v) => semver.parse(v));
+    if (!valid.length) {
+      return { content: [{ type: 'text', text: `No valid versions found in: "${versions}"` }], isError: true };
+    }
+    if (valid.length < list.length) {
+      // include hint about rejected entries
+    }
+    const best = semver.maxSatisfying(valid, range);
+    const rejected = list.length - valid.length;
+    let txt = `Versions checked: ${list.join(', ')}${rejected ? ` (${rejected} invalid ignored)` : ''}\n`;
+    txt += `Range: ${range}  →  expanded: ${semver.explainRange(range)}\n`;
+    txt += best ? `MAX satisfying (best upgrade target): ${best}` : 'No version in the list satisfies the range.';
+    return { content: [{ type: 'text', text: txt }] };
+  }
+};
 
 const TOOL_UUID_MINT = {
   name: 'uuid_mint',
@@ -671,6 +756,10 @@ const TOOL_DEFS = [
   TOOL_JWT_DECODE,
   TOOL_MARKDOWN_TO_HTML,
   TOOL_UUID_MINT,
+  TOOL_SEMVER_COMPARE,
+  TOOL_SEMVER_SATISFIES,
+  TOOL_SEMVER_BUMP,
+  TOOL_SEMVER_MAX,
 ];
 
 function toolNames() {

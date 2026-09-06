@@ -11,7 +11,7 @@ const PORT = process.env.MCP_PORT || 3000;
 // Per-request self-probe tag from the X-Probe header, read by logCall so
 // build/e2e self-tests never count as external agent traffic.
 let currentProbeTag = null;
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const NAME = 'casper-tools';
 
 // Analytics: log every tool call
@@ -45,7 +45,7 @@ function createServer() {
       version: VERSION,
     },
     {
-      instructions: 'Casper Tools MCP server. Provides utilities for JSON inspection, regex testing, cron parsing, hashing, base64 codec, URL analysis, color conversion, text diffing, CSV parsing, JWT decode/verify, Markdown-to-HTML rendering, and UUID/token minting.',
+      instructions: 'Casper Tools MCP server. Provides utilities for JSON inspection, regex testing, cron parsing, hashing, base64 codec, URL analysis, color conversion, text diffing, CSV parsing, JWT decode/verify, Markdown-to-HTML rendering, UUID/token minting, and Semantic Versioning (compare, satisfy, bump, pick upgrade target).',
       capabilities: { tools: {} },
     }
   );
@@ -117,7 +117,7 @@ app.get('/mcp', (req, res) => {
   res.json({
     name: NAME,
     version: VERSION,
-    description: 'MCP server exposing 12 agentic utilities: JSON inspection, regex testing, cron parsing, hashing, base64 codec, URL analysis, color conversion, text diffing, CSV parsing, JWT decode/verify, Markdown-to-HTML, and UUID/token minting.',
+    description: 'MCP server exposing 16 agentic utilities: JSON inspection, regex testing, cron parsing, hashing, base64 codec, URL analysis, color conversion, text diffing, CSV parsing, JWT decode/verify, Markdown-to-HTML, UUID/token minting, and Semantic Versioning tools (compare, satisfies, bump, max).',
     tools: toolNames(),
     endpoint: 'POST /mcp (MCP Streamable HTTP)',
   });
