@@ -11,6 +11,21 @@
     "productivity",
     "utility"
   ],
+  "tags": [
+    "json",
+    "regex",
+    "cron",
+    "hash",
+    "base64",
+    "url",
+    "color",
+    "diff",
+    "csv",
+    "jwt",
+    "markdown",
+    "uuid",
+    "semver"
+  ],
   "license": "mit",
   "homepage": "https://github.com/magiautonomous/casper-tools",
   "environmentVariables": [],
