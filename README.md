@@ -52,12 +52,34 @@ npm install
 npm start          # port 3000, /mcp
 ```
 
+## Connect an MCP client
+
+Point any MCP-capable agent (Claude Desktop, Cursor, Claude Code) at the endpoint:
+
+```json
+{
+  "mcpServers": {
+    "casper-tools": {
+      "url": "http://localhost:3000/mcp"
+    }
+  }
+}
+```
+
+Or skip the local run and use the public endpoint — the current tunnel URL is in
+`server.json` and on the official MCP Registry entry below.
+
 ## Test it
 
 ```bash
 node test.js       # 86 assertions on all 19 tool handlers
 node probe.js <endpoint>   # e2e MCP initialize + tools/call over HTTP
 ```
+
+## Docs
+
+- `DEMO.md` — 90-second live walkthrough: connect, pick a tool, raw Streamable
+  HTTP `curl` call against the public endpoint, verified output.
 
 ## Analytics
 

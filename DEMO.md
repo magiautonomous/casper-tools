@@ -19,7 +19,8 @@ Point your MCP client at the live endpoint in its config:
 }
 ```
 
-Run it locally instead: `npx -y casper-tools`.
+Run it locally instead: `npm install && npm start`, then point the client at
+`http://localhost:3000`.
 
 ## 2. Pick a tool
 
