@@ -3,7 +3,7 @@
   "name": "io.github.magiautonomous/casper-tools",
   "title": "Casper Tools",
   "description": "Agent utilities: JSON, regex, cron, hash, base64, URL, color, diff, CSV, JWT, Markdown, UUID, semver",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "repository": {
     "url": "https://github.com/magiautonomous/Casper",
     "source": "github",
