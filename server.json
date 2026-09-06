@@ -3,11 +3,10 @@
   "name": "io.github.magiautonomous/casper-tools",
   "title": "Casper Tools",
   "description": "Utilities: JSON, regex, cron, hash, base64, URL, color, diff, CSV, JWT, UUID, Markdown, semver, time",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "repository": {
-    "url": "https://github.com/magiautonomous/Casper",
-    "source": "github",
-    "subfolder": "mcp-server"
+    "url": "https://github.com/magiautonomous/casper-tools",
+    "source": "github"
   },
   "tags": [
     "developer-tools",
