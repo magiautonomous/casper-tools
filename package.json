@@ -1,13 +1,33 @@
 {
-  "name": "mcp-server",
+  "name": "casper-tools",
   "version": "1.2.4",
-  "description": "Casper Tools MCP server - 14 agentic utilities over Model Context Protocol (Streamable HTTP)",
+  "description": "Casper Tools MCP server - 16 agentic utilities over Model Context Protocol (Streamable HTTP)",
   "main": "server.js",
   "scripts": {
     "test": "node test.js",
     "start": "node server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "agents",
+    "json",
+    "regex",
+    "cron",
+    "hash",
+    "base64",
+    "url",
+    "color",
+    "diff",
+    "csv",
+    "jwt",
+    "markdown",
+    "uuid",
+    "semver",
+    "developer-tools",
+    "utility",
+    "streamable-http"
+  ],
   "type": "commonjs",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
