@@ -117,7 +117,7 @@ app.get('/mcp', (req, res) => {
   res.json({
     name: NAME,
     version: VERSION,
-    description: 'MCP server exposing 18 agentic utilities: JSON inspection, regex testing, cron parsing, hashing, base64 codec, URL analysis, color conversion, text diffing, CSV parsing, JWT decode/verify, Markdown-to-HTML, UUID/token minting, time/timezone conversion, Semantic Versioning tools (compare, satisfies, bump, max), and password strength analysis.',
+    description: 'MCP server exposing 19 agentic utilities: JSON inspection, regex testing, cron parsing, hashing, base64 codec, URL analysis, color conversion, text diffing, CSV parsing, JWT decode/verify, Markdown-to-HTML, UUID/token minting, time/timezone conversion, Semantic Versioning tools (compare, satisfies, bump, max), password strength analysis, and YAML parsing.',
     tools: toolNames(),
     endpoint: 'POST /mcp (MCP Streamable HTTP)',
   });
