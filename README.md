@@ -98,28 +98,45 @@ Where the server is listed and how to get it in more places:
   published under `https://registry.modelcontextprotocol.io` (search "casper
   tools"). Version 1.4.0 is the latest published entry.
 - **Glama** — [glama.ai/mcp/servers/magiautonomous/casper-tools](
-  https://glama.ai/mcp/servers/magiautonomous/casper-tools) (live; auto-syncs
-  from the official registry, so it refreshes on the next registry publish).
+  https://glama.ai/mcp/servers/magiautonomous/casper-tools) (present; auto-syncs
+  from the official registry). Verified 2026-09-07: endpoint is current, but the
+  cached description/tool table still says 12 utilities — refreshes on the next
+  registry publish; claim the listing to force an early refresh.
+- **mcprepository.com** — [mcprepository.com/magiautonomous/casper-tools](
+  https://mcprepository.com/magiautonomous/casper-tools) (present but STALE,
+  verified 2026-09-07): index shows 8 tools and a dead tunnel URL
+  (`virtue-hardly-skills-calling`, offline). Their `POST /api/index` refresh
+  returns `duplicate:true` and refuses to re-crawl, so update must go through
+  the web submit form (human click) with the corrected copy below.
 - **npm (not yet)** — package `casper-tools` v1.4.0 is publish-ready
   (`PUBLISH.md`); npm listing pending human npm credentials. Once live, the
   `npm i casper-tools` + `npm start` path above is the drop-in install.
 - **mcp.directory / mcp.so / Smithery / PulseMCP / mcpservers.org** — not listed
-  yet. They auto-pull from the official registry or accept a web-form submission.
-  Copy-paste kit for the web forms (both accept the same fields):
+  yet (verified 2026-09-07). They auto-pull from the official registry or accept
+  a web-form submission.
+
+### Directory update kit (current as of 2026-09-07)
+
+Same fields for any submit/update form (Glama claim, mcprepository, mcp.so,
+Smithery, PulseMCP):
 
 ```
 Server name:  Casper Tools
+Version:      1.4.0
 GitHub URL:   https://github.com/magiautonomous/casper-tools
-Description:  19 zero-setup MCP utilities for AI agents — JSON, regex, cron,
-              hashing, semver, JWT, CSV, YAML, Markdown, UUID, color, diff,
-              base64, URL, time, password strength. Streamable HTTP, no API
-              keys, no auth.
-Tags:         mcp, developer-tools, utility, json, semver, yaml, claude
+Description:  MCP server with 19 agentic utilities over Streamable HTTP —
+              JSON inspect, regex test, cron parse, hash, base64, URL
+              analysis, color convert, text diff, CSV parse, JWT decode,
+              Markdown-to-HTML, UUID mint, time convert, password strength,
+              semver (compare/satisfies/bump/max), YAML parse. No auth, no
+              API keys, zero setup.
+Tags:         mcp, developer-tools, utility, json, semver, yaml, jwt
 Connection:   POST https://determines-product-administration-farmer.trycloudflare.com/mcp
+Registry:     io.github.magiautonomous/casper-tools (official MCP Registry)
 ```
 
-- Getting listed is tracked in T-31 (WS2 listing visibility); submissions that
-  need a human browser/account are handed to Taner/Casper to click.
+- Getting listed/updated is tracked in T-31 (WS2 listing visibility); submissions
+  that need a human browser/account are handed to Taner/Casper to click.
 
 ## Analytics
 
