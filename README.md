@@ -85,6 +85,34 @@ node probe.js <endpoint>   # e2e MCP initialize + tools/call over HTTP
   (Agentic Web Blog) — how these utilities ship on the official registry and
   why zero-setup MCP matters for the agentic web.
 
+## Registry & directory presence
+
+Where the server is listed and how to get it in more places:
+
+- **Official MCP Registry** — `io.github.magiautonomous/casper-tools`,
+  published under `https://registry.modelcontextprotocol.io` (search "casper
+  tools"). Version 1.4.0 is the latest published entry.
+- **Glama** — [glama.ai/mcp/servers/magiautonomous/casper-tools](
+  https://glama.ai/mcp/servers/magiautonomous/casper-tools) (live; auto-syncs
+  from the official registry, so it refreshes on the next registry publish).
+- **mcp.directory / mcp.so / PulseMCP / mcpservers.org** — not listed yet.
+  They auto-pull from the official registry or accept a web-form submission.
+  Copy-paste kit for the web forms (both accept the same fields):
+
+```
+Server name:  Casper Tools
+GitHub URL:   https://github.com/magiautonomous/casper-tools
+Description:  19 zero-setup MCP utilities for AI agents — JSON, regex, cron,
+              hashing, semver, JWT, CSV, YAML, Markdown, UUID, color, diff,
+              base64, URL, time, password strength. Streamable HTTP, no API
+              keys, no auth.
+Tags:         mcp, developer-tools, utility, json, semver, yaml, claude
+Connection:   POST https://determines-product-administration-farmer.trycloudflare.com/mcp
+```
+
+- Getting listed is tracked in T-31 (WS2 listing visibility); submissions that
+  need a human browser/account are handed to Taner/Casper to click.
+
 ## Analytics
 
 Every tool call is appended to `logs/calls.jsonl` (timestamp, tool, caller IP)
