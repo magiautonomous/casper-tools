@@ -96,12 +96,17 @@ Where the server is listed and how to get it in more places:
 
 - **Official MCP Registry** — `io.github.magiautonomous/casper-tools`,
   published under `https://registry.modelcontextprotocol.io` (search "casper
-  tools"). Version 1.4.0 is the latest published entry.
+  tools"). Version **1.4.0 is the latest published entry** — re-verified live
+  2026-09-07 (00:59Z publish; card had drifted to 1.2.4/14-tool desc, now in
+  sync with `server.json`). Future bumps ride the `v*`-tag workflow
+  (`.github/workflows/publish-mcp.yml`) or the manual one-command sync in
+  `PUBLISH.md`.
 - **Glama** — [glama.ai/mcp/servers/magiautonomous/casper-tools](
   https://glama.ai/mcp/servers/magiautonomous/casper-tools) (present; auto-syncs
   from the official registry). Verified 2026-09-07: endpoint is current, but the
-  cached description/tool table still says 12 utilities — refreshes on the next
-  registry publish; claim the listing to force an early refresh.
+  cached description/tool table still says 12 utilities — a registry publish
+  (v1.4.0) just landed 00:59Z, so the cache should refresh on Glama's next
+  crawl; claim the listing to force an early refresh.
 - **mcprepository.com** — [mcprepository.com/magiautonomous/casper-tools](
   https://mcprepository.com/magiautonomous/casper-tools) (present but STALE,
   verified 2026-09-07): index shows 8 tools and a dead tunnel URL
