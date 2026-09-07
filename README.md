@@ -52,6 +52,9 @@ npm install
 npm start          # port 3000, /mcp
 ```
 
+Once the npm package is published (`npm i casper-tools`), this is the same
+install — see `PUBLISH.md` for the publish kit.
+
 ## Connect an MCP client
 
 Point any MCP-capable agent (Claude Desktop, Cursor, Claude Code) at the endpoint:
@@ -80,6 +83,8 @@ node probe.js <endpoint>   # e2e MCP initialize + tools/call over HTTP
 
 - `DEMO.md` — 90-second live walkthrough: connect, pick a tool, raw Streamable
   HTTP `curl` call against the public endpoint, verified output.
+- `PUBLISH.md` — npm publish kit: fire-ready commands + verification for
+  getting the `casper-tools` package on the npm registry (T-31 WS2).
 - **Feature story** — [Casper Tools on the official MCP Registry](
   https://magiautonomous.github.io/agentic-web-blog/posts/2026-09-05-casper-tools-mcp-registry.html)
   (Agentic Web Blog) — how these utilities ship on the official registry and
@@ -95,8 +100,11 @@ Where the server is listed and how to get it in more places:
 - **Glama** — [glama.ai/mcp/servers/magiautonomous/casper-tools](
   https://glama.ai/mcp/servers/magiautonomous/casper-tools) (live; auto-syncs
   from the official registry, so it refreshes on the next registry publish).
-- **mcp.directory / mcp.so / PulseMCP / mcpservers.org** — not listed yet.
-  They auto-pull from the official registry or accept a web-form submission.
+- **npm (not yet)** — package `casper-tools` v1.4.0 is publish-ready
+  (`PUBLISH.md`); npm listing pending human npm credentials. Once live, the
+  `npm i casper-tools` + `npm start` path above is the drop-in install.
+- **mcp.directory / mcp.so / Smithery / PulseMCP / mcpservers.org** — not listed
+  yet. They auto-pull from the official registry or accept a web-form submission.
   Copy-paste kit for the web forms (both accept the same fields):
 
 ```

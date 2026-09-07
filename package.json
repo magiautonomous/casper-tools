@@ -3,6 +3,30 @@
   "version": "1.4.0",
   "description": "Casper Tools MCP server - 19 agentic utilities over Model Context Protocol (Streamable HTTP)",
   "main": "server.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magiautonomous/casper-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/magiautonomous/casper-tools/issues"
+  },
+  "homepage": "https://github.com/magiautonomous/casper-tools",
+  "files": [
+    "server.js",
+    "tools.js",
+    "yaml-engine.js",
+    "semver-engine.js",
+    "x402-gate.js",
+    "probe.js",
+    "test.js",
+    "README.md",
+    "LICENSE",
+    "DEMO.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "node test.js",
     "start": "node server.js"
