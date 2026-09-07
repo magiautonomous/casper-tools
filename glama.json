@@ -4,7 +4,7 @@
     "magiautonomous"
   ],
   "displayName": "Casper Tools",
-  "description": "16 agent utility functions over streamable HTTP: json_inspect, regex_test, cron_parse, hash_compute, base64_encode, url_analyze, color_convert, text_diff, csv_parse, jwt_decode, markdown_to_html, uuid_mint, semver_compare, semver_satisfies, semver_bump, semver_max. No API keys required.",
+  "description": "19 agent utility functions over streamable HTTP: JSON, regex, cron, hash, base64, URL, color, diff, CSV, JWT, Markdown, UUID, time, password strength, semver, YAML. No API keys required.",
   "categories": [
     "developer-tools",
     "data-conversion",
@@ -24,7 +24,10 @@
     "jwt",
     "markdown",
     "uuid",
-    "semver"
+    "semver",
+    "yaml",
+    "time",
+    "password"
   ],
   "license": "mit",
   "homepage": "https://github.com/magiautonomous/casper-tools",

@@ -7,6 +7,7 @@ try {
   z = require('@modelcontextprotocol/sdk/node_modules/zod');
 }
 const semver = require('./semver-engine.js');
+const yaml = require('./yaml-engine.js');
 
 const trunc = (s, n) => (s.length > n ? s.substring(0, n) + '...' : s);
 
@@ -743,7 +744,278 @@ const TOOL_TEXT_DIFF = {
   }
 };
 
+// ---- time_convert -----------------------------------------------------------
+const TIME_UNIT_MS = { sec: 1e3, second: 1e3, min: 6e4, minute: 6e4, h: 36e5, hr: 36e5, hour: 36e5, day: 864e5, week: 6048e5, month: 26298e5, year: 31557e6 };
+
+function timeGetParts(tz, epoch) {
+  const parts = {};
+  const opts = { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+  for (const x of new Intl.DateTimeFormat('en-US', opts).formatToParts(epoch)) if (x.type !== 'literal') parts[x.type] = x.value;
+  return parts;
+}
+
+function timeZonedEpoch(wall, tz) {
+  const guess = Date.UTC(wall.y, wall.M - 1, wall.d, wall.h, wall.m, wall.s || 0);
+  const p = timeGetParts(tz, guess);
+  const inTz = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute, +p.second);
+  return guess + (guess - inTz);
+}
+
+function timeRelative(ms) {
+  const delta = ms - Date.now();
+  const abs = Math.abs(delta);
+  const units = Object.entries(TIME_UNIT_MS).sort((a, b) => b[1] - a[1]);
+  for (const [name, size] of units) {
+    if (name.length > 3 && abs >= size && abs < size * 365) {
+      const n = Math.round(delta / size);
+      const r = Math.abs(n);
+      return `${r} ${name}${r === 1 ? '' : 's'} ${n < 0 ? 'ago' : 'from now'}`;
+    }
+  }
+  return 'just now';
+}
+
+const TOOL_TIME_CONVERT = {
+  name: 'time_convert',
+  description: 'Convert and explain a date/time: epoch ms/s, ISO 8601, or relative ("2h ago"). Cross-convert timezones (IANA names like America/New_York). Naive inputs treated as UTC.',
+  inputSchema: {
+    value: z.string().describe('Time input: ISO 8601, epoch seconds or milliseconds, or relative like "2h ago" / "in 3 days" / "now"'),
+    from_tz: z.string().optional().describe('IANA timezone the input is in, e.g. America/New_York. Use when the input is a wall-clock time without an offset'),
+    to_tz: z.string().optional().describe('IANA timezone to convert to (comma-separated for several), e.g. Europe/Berlin. Default: UTC only')
+  },
+  async run({ value, from_tz, to_tz }) {
+    let ms;
+    try {
+      ms = (() => {
+        const v = String(value).trim().toLowerCase();
+        if (v === 'now') return Date.now();
+        if (/^\d{10}$/.test(v)) return +v * 1000;
+        if (/^\d{13}$/.test(v)) return +v;
+        const rel = v.match(/^(?:in\s+)?([+-]?\d+(?:\.\d+)?)\s*(seconds?|secs?|mins?|minutes?|hrs?|hours?|h|days?|weeks?|months?|years?)(?:\s+(?:ago|from now))?$/i);
+        if (rel) {
+          const n = parseFloat(rel[1]);
+          const mult = TIME_UNIT_MS[(rel[2].toLowerCase().replace(/s$/i, ''))] || TIME_UNIT_MS[rel[2].toLowerCase()];
+          return v.includes('ago') ? Date.now() - n * mult : Date.now() + n * mult;
+        }
+        if (from_tz) {
+          const dm = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ t](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/);
+          const hm = v.match(/^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
+          const wall = dm ? { y: +dm[1], M: +dm[2], d: +dm[3], h: +(dm[4] || 0), m: +(dm[5] || 0), s: +(dm[6] || 0) }
+            : hm ? (() => { const now = new Date(); return { y: now.getUTCFullYear(), M: now.getUTCMonth() + 1, d: now.getUTCDate(), h: +hm[1], m: +hm[2], s: +(hm[3] || 0) }; })()
+            : null;
+          if (wall) return timeZonedEpoch(wall, from_tz);
+        }
+        const hasZone = /(z|[+-]\d{2}:?\d{2}(:\d{2})?)$/i.test(v);
+        const iso = hasZone ? v : v + 'Z';
+        const m = Date.parse(iso);
+        if (!isNaN(m)) return m;
+        throw new Error('unparsable');
+      })();
+    } catch (e) {
+      return { content: [{ type: 'text', text: `Could not parse "${value}". Try ISO 8601, epoch seconds/ms, or relative like "2h ago" / "now".${from_tz ? ' Ensure from_tz is a valid IANA timezone.' : ''}` }], isError: true };
+    }
+const d = new Date(ms);
+    const out = [`Input: ${value}${from_tz ? ` (wall time in ${from_tz})` : ''}`];
+    out.push(`  epoch ms ${ms}`);
+    out.push(`  epoch s  ${Math.floor(ms / 1000)}`);
+    const utc = timeGetParts('UTC', ms);
+    out.push(`  UTC       ${utc.year}-${utc.month}-${utc.day} ${utc.hour}:${utc.minute}:${utc.second} (${d.toUTCString().slice(0, 3)})`);
+    const tzs = (to_tz || '').split(',').map(s => s.trim()).filter(Boolean);
+    if (from_tz && !to_tz) tzs.push(from_tz);
+    for (const tz of tzs) {
+      try { const p = timeGetParts(tz, ms); out.push(`  ${tz.padEnd(20)} ${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`); }
+      catch (e) { out.push(`  ${tz}  (invalid IANA timezone)`); }
+    }
+    out.push(`  human     ${timeRelative(ms)}`);
+    return { content: [{ type: 'text', text: out.join('\n') }] };
+  }
+};
+
+// ---- password_strength ------------------------------------------------------
+const COMMON_PASSWORDS = new Set([
+  'password','123456','12345678','qwerty','abc123','monkey','1234567','letmein',
+  'trustno1','dragon','baseball','iloveyou','master','sunshine','ashley','bailey',
+  'passw0rd','shadow','123123','654321','superman','qazwsx','michael','football',
+  'password1','password!','welcome','admin','login','pass','guest','test'
+]);
+
+const PATTERNS = [
+  { re: /(.)\1\1/i, label: 'repeated-char', msg: 'Three or more repeated characters' },
+  { re: /^[a-z]+$/i, label: 'letters-only', msg: 'Only letters' },
+  { re: /^[0-9]+$/, label: 'digits-only', msg: 'Only digits' },
+  { re: /^[a-z0-9]+$/i, label: 'alphanumeric-only', msg: 'Only letters and digits' },
+  { re: /password/i, label: 'contains-password', msg: 'Contains the word "password"' },
+  { re: /^123/, label: 'starts-123', msg: 'Starts with sequential digits' },
+  { re: /^(.)\1+$/, label: 'all-same', msg: 'All characters are the same' },
+  { re: /^(?:qwerty|asdfgh|zxcvbn)/i, label: 'keyboard-row', msg: 'Keyboard row sequence' },
+];
+
+function shannonEntropy(pw) {
+  if (!pw) return 0;
+  const len = pw.length;
+  const freq = {};
+  for (const c of pw) freq[c] = (freq[c] || 0) + 1;
+  let entropy = 0;
+  for (const c of pw) {
+    const p = freq[c] / len;
+    entropy -= p * Math.log2(p);
+  }
+  return entropy * len;
+}
+
+function analyzePassword(password) {
+  if (!password || typeof password !== 'string') {
+    return { score: 0, rating: 'invalid', issues: ['Password must be a non-empty string'] };
+  }
+  const pw = String(password);
+  const len = pw.length;
+  const issues = [];
+  const positives = [];
+
+  if (len === 0) return { score: 0, rating: 'invalid', issues: ['Empty password'] };
+
+  const lengthScore = len >= 16 ? 25 : len >= 12 ? 20 : len >= 8 ? 12 : len >= 6 ? 5 : 0;
+  if (len >= 16) positives.push('Excellent length (16+)');
+  else if (len >= 12) positives.push('Good length (12+)');
+  else if (len < 8) issues.push('Too short (minimum 8 recommended)');
+
+  const hasLower = /[a-z]/.test(pw);
+  const hasUpper = /[A-Z]/.test(pw);
+  const hasDigit = /[0-9]/.test(pw);
+  const hasSpecial = /[^a-zA-Z0-9]/.test(pw);
+  const classes = [hasLower, hasUpper, hasDigit, hasSpecial].filter(Boolean).length;
+
+  const varietyScore = classes * 10;
+  if (!hasLower && !hasUpper) issues.push('No letters');
+  if (!hasDigit) issues.push('No digits');
+  if (!hasSpecial) issues.push('No special characters');
+  if (classes === 4) positives.push('All character classes present');
+
+  const entropy = shannonEntropy(pw);
+  const entropyScore = Math.min(25, Math.max(0, entropy / 2));
+  if (entropy < 20) issues.push('Low entropy (predictable patterns)');
+  else if (entropy > 50) positives.push('High entropy');
+
+  if (COMMON_PASSWORDS.has(pw.toLowerCase())) {
+    issues.push('Matches a commonly used password');
+  }
+
+  for (const pat of PATTERNS) {
+    if (pat.re.test(pw)) issues.push(pat.msg);
+  }
+
+  const seqRe = /(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789)/i;
+  if (seqRe.test(pw)) issues.push('Contains a sequential character run');
+
+  if (/^\d{4}[-\/]\d{2}[-\/]\d{2}$/.test(pw)) issues.push('Looks like a date');
+
+  const repeatedRe = /(.)\1{2,}/;
+  const repeatedMatch = pw.match(repeatedRe);
+  if (repeatedMatch && repeatedMatch[0].length >= 3) {
+    issues.push(`Repeated character "${repeatedMatch[1]}" x${repeatedMatch[0].length}`);
+  }
+
+  let score = Math.round(lengthScore + varietyScore + entropyScore);
+  if (COMMON_PASSWORDS.has(pw.toLowerCase())) score = Math.min(score, 15);
+  score = Math.max(0, Math.min(100, score));
+
+  let rating;
+  if (score >= 80) rating = 'very_strong';
+  else if (score >= 60) rating = 'strong';
+  else if (score >= 40) rating = 'fair';
+  else if (score >= 20) rating = 'weak';
+  else rating = 'very_weak';
+
+  const suggestions = [];
+  if (len < 12) suggestions.push('Use at least 12 characters (16+ is ideal)');
+  if (!hasUpper) suggestions.push('Add uppercase letters');
+  if (!hasLower) suggestions.push('Add lowercase letters');
+  if (!hasDigit) suggestions.push('Add digits');
+  if (!hasSpecial) suggestions.push('Add special characters (!@#$%^&*)');
+  if (entropy < 30) suggestions.push('Avoid predictable words or patterns');
+  if (COMMON_PASSWORDS.has(pw.toLowerCase())) suggestions.push('This is a commonly hacked password — choose something unique');
+
+  return {
+    score,
+    rating,
+    length: len,
+    character_classes: { lowercase: hasLower, uppercase: hasUpper, digits: hasDigit, special: hasSpecial },
+    entropy: Math.round(entropy * 100) / 100,
+    crack_time_estimate: estimateCrackTime(entropy),
+    issues: issues.length ? issues : undefined,
+    positives: positives.length ? positives : undefined,
+    suggestions: suggestions.length ? suggestions : undefined
+  };
+}
+
+function estimateCrackTime(entropy) {
+  const guessesPerSecond = 1e10;
+  const combinations = Math.pow(2, entropy);
+  const seconds = combinations / (2 * guessesPerSecond);
+  if (seconds < 1) return 'instant';
+  if (seconds < 60) return '< 1 minute';
+  if (seconds < 3600) return `${Math.round(seconds / 60)} minutes`;
+  if (seconds < 86400) return `${Math.round(seconds / 3600)} hours`;
+  if (seconds < 31536000) return `${Math.round(seconds / 86400)} days`;
+  if (seconds < 31536000 * 1000) return `${Math.round(seconds / 31536000 / 1000)} thousand years`;
+  return 'effectively forever';
+}
+
+const TOOL_PASSWORD_STRENGTH = {
+  name: 'password_strength',
+  description: 'Analyze password strength. Returns a 0-100 score, rating, length, character-class variety, Shannon entropy, estimated crack time, issues, positives, and improvement suggestions.',
+  inputSchema: {
+    password: z.string().describe('The password string to analyze')
+  },
+  async run({ password }) {
+    const result = analyzePassword(password);
+    const lines = [
+      `Password strength analysis:`,
+      `  Score:  ${result.score}/100 (${result.rating})`,
+      `  Length: ${result.length} characters`,
+      `  Classes: ${Object.entries(result.character_classes).filter(([,v]) => v).map(([k]) => k).join(', ') || 'none'}`,
+      `  Entropy: ${result.entropy} bits`,
+      `  Estimated crack time: ${result.crack_time_estimate}`
+    ];
+    if (result.issues && result.issues.length) lines.push(`\nIssues:\n${result.issues.map(i => `  - ${i}`).join('\n')}`);
+    if (result.positives && result.positives.length) lines.push(`\nPositives:\n${result.positives.map(p => `  + ${p}`).join('\n')}`);
+    if (result.suggestions && result.suggestions.length) lines.push(`\nSuggestions:\n${result.suggestions.map(s => `  -> ${s}`).join('\n')}`);
+    return { content: [{ type: 'text', text: lines.join('\n') }] };
+  }
+};
+
+const TOOL_YAML_PARSE = {
+  name: 'yaml_parse',
+  description: 'Parse YAML into JSON. Converts YAML documents (maps, lists, nesting, flow collections {a: 1}, [1,2], inline scalars, multi-document streams with ---) into a JSON object/array. Handles docker-compose, k8s manifests, GitHub Actions and similar configs.',
+  inputSchema: {
+    yaml: z.string().describe('The YAML text to parse'),
+    pretty: z.boolean().default(true).describe('Whether to indent the returned JSON (true) or minify it (false)')
+  },
+  async run({ yaml: yamlText, pretty }) {
+    if (typeof yamlText !== 'string' || yamlText.trim() === '') {
+      return { content: [{ type: 'text', text: 'Error: no YAML input provided.' }], isError: true };
+    }
+    let obj;
+    try {
+      obj = yaml.parse(yamlText);
+    } catch (e) {
+      return { content: [{ type: 'text', text: `Error: invalid YAML — ${e.message}` }], isError: true };
+    }
+    const json = JSON.stringify(obj, null, pretty === false ? 0 : 2);
+    let head = `Parsed YAML to JSON:\n`;
+    let stats = '';
+    try {
+      const type = Array.isArray(obj) ? 'array' : typeof obj;
+      stats = `  Type: ${type}${Array.isArray(obj) ? ` (${obj.length} items)` : (obj !== null && typeof obj === 'object') ? ` (${Object.keys(obj).length} keys at root)` : ''}\n`;
+    } catch (e) {}
+    const size = Buffer.byteLength(json, 'utf8');
+    const inputSize = Buffer.byteLength(yamlText, 'utf8');
+    return { content: [{ type: 'text', text: `${head}${stats}  Input: ${inputSize} bytes, Output: ${size} bytes\n\n${json}` }] };
+  }
+};
+
 const TOOL_DEFS = [
+  TOOL_TIME_CONVERT,
   TOOL_JSON_INSPECT,
   TOOL_REGEX_TEST,
   TOOL_CRON_PARSE,
@@ -756,6 +1028,8 @@ const TOOL_DEFS = [
   TOOL_JWT_DECODE,
   TOOL_MARKDOWN_TO_HTML,
   TOOL_UUID_MINT,
+  TOOL_PASSWORD_STRENGTH,
+  TOOL_YAML_PARSE,
   TOOL_SEMVER_COMPARE,
   TOOL_SEMVER_SATISFIES,
   TOOL_SEMVER_BUMP,
@@ -766,4 +1040,4 @@ function toolNames() {
   return TOOL_DEFS.map(t => t.name);
 }
 
-module.exports = { TOOL_DEFS, toolNames, renderMarkdown, parseCsv, detectDelimiter, inlineMd };
+module.exports = { TOOL_DEFS, toolNames, renderMarkdown, parseCsv, detectDelimiter, inlineMd, analyzePassword, yaml };

@@ -1,7 +1,7 @@
 {
   "name": "casper-tools",
-  "version": "1.2.4",
-  "description": "Casper Tools MCP server - 16 agentic utilities over Model Context Protocol (Streamable HTTP)",
+  "version": "1.4.0",
+  "description": "Casper Tools MCP server - 19 agentic utilities over Model Context Protocol (Streamable HTTP)",
   "main": "server.js",
   "scripts": {
     "test": "node test.js",

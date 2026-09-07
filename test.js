@@ -14,10 +14,13 @@ function check(label, cond) {
 }
 
 console.log('== tool registry ==');
-check('16 tools registered', TOOL_DEFS.length === 16);
+check('18 tools registered', TOOL_DEFS.length === 19);
 check('older 8 still present', ['json_inspect', 'regex_test', 'cron_parse', 'hash_compute', 'base64_encode', 'url_analyze', 'color_convert', 'text_diff'].every(t => toolNames().includes(t)));
 check('new 4 present', ['csv_parse', 'jwt_decode', 'markdown_to_html', 'uuid_mint'].every(t => toolNames().includes(t)));
-check('semver 4 present', ['semver_compare', 'semver_satisfies', 'semver_bump', 'semver_max'].every(t => toolNames().includes(t)));
+  check('semver 4 present', ['semver_compare', 'semver_satisfies', 'semver_bump', 'semver_max'].every(t => toolNames().includes(t)));
+  check('time_convert present', toolNames().includes('time_convert'));
+  check('password_strength present', toolNames().includes('password_strength'));
+  check('yaml_parse present', toolNames().includes('yaml_parse'));
 
 console.log('== csv_parse ==');
 (async () => {
@@ -155,6 +158,51 @@ console.log('== csv_parse ==');
   check('max none', max2.includes('No version in the list satisfies'));
   const max3 = text(await svmax.run({ range: '^1.0.0', versions: '1.4.1,alpha,1.6.0' }));
   check('max ignores invalid', max3.includes('(1 invalid ignored)'));
+
+  const timec = byName('time_convert');
+  const tcEpoch = text(await timec.run({ value: '1700000000' }));
+  check('time epoch s -> ms', tcEpoch.includes('epoch ms 1700000000000'));
+  const tcIso = text(await timec.run({ value: '2026-01-15T12:00:00Z', to_tz: 'America/New_York' }));
+  check('time iso+tz converts', tcIso.includes('America/New_York') && tcIso.includes('07:00:00'));
+  const tcRel = text(await timec.run({ value: '2h ago' }));
+  check('time relative', /hours? ago|minutes? ago/.test(tcRel));
+  const tcZone = text(await timec.run({ value: '2026-07-01 09:00:00', from_tz: 'America/New_York' }));
+  check('time wall-clock in tz', tcZone.includes('epoch ms 1782910800000') && tcZone.includes('13:00:00'));
+  const tcBad = text(await timec.run({ value: 'not-a-time' }));
+  check('time bad input errors', tcBad.includes('Could not parse'));
+
+  console.log('== password_strength ==');
+  const pwd = byName('password_strength');
+  const pw1 = text(await pwd.run({ password: 'password' }));
+  check('pwd common password low score', /Score:\s*\d+/i.test(pw1));
+  const m = pw1.match(/Score:\s*(\d+)/i);
+  if (m) check('pwd score < 50', parseInt(m[1]) < 50);
+  check('pwd common flagged', /common/i.test(pw1));
+  const pw2 = text(await pwd.run({ password: 'My$tr0ng_P@ss!2024' }));
+  check('pwd strong high score', pw2.includes('90') || pw2.includes('very_strong'));
+  check('pwd entropy present', /entropy/i.test(pw2));
+  const pw3 = text(await pwd.run({ password: 'short' }));
+  check('pwd short suggestions', /suggestions/i.test(pw3) || pw3.includes('->'));
+  check('pwd returns content', pw1.length > 10 && pw2.length > 10);
+
+  console.log('== yaml_parse ==');
+  const yp = byName('yaml_parse');
+  const ya = text(await yp.run({ yaml: 'name: web\nports:\n  - 8080\n  - 9090\ndb:\n  host: localhost\n  port: 5432', pretty: true }));
+  check('yaml basic mapping', ya.includes('"name": "web"') && ya.includes('"ports"'));
+  check('yaml sequence', ya.includes('8080') && ya.includes('9090'));
+  check('yaml nested object', ya.includes('"db"') && ya.includes('"host": "localhost"'));
+  check('yaml number typed', ya.includes('5432'));
+  const yb = text(await yp.run({ yaml: 'a: {b: 1, c: [x, y]}\nd: [1, 2, 3]', pretty: false }));
+  check('yaml flow map', yb.includes('"b":1') && yb.includes('"c":["x","y"]'));
+  check('yaml flow seq', yb.includes('"d":[1,2,3]'));
+  const yc = text(await yp.run({ yaml: 'steps:\n  - uses: actions/checkout@v4\n  - uses: actions/setup-node@v4\n    with:\n      node-version: 20', pretty: false }));
+  check('yaml list of maps', yc.includes('"steps"') && yc.includes('actions/checkout@v4') && yc.includes('"node-version":20'));
+  const yd = text(await yp.run({ yaml: '', pretty: true }));
+  check('yaml empty errors', yd.includes('Error'));
+  const ye = text(await yp.run({ yaml: 'a: 1\n---\nb: [1, 2]', pretty: false }));
+  check('yaml multi-doc stream', ye.includes('[{') && ye.includes('"b":[1,2]'));
+  const yf = text(await yp.run({ yaml: 'items: []\nmap: {}\nempty: ~', pretty: false }));
+  check('yaml empties', yf.includes('"items":[]') && yf.includes('"map":{}') && yf.includes('"empty":null'));
 
   console.log(`\n${passed} passed, ${failed} failed`);
   process.exit(failed > 0 ? 1 : 0);
