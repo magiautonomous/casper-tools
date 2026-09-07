@@ -116,14 +116,22 @@ Where the server is listed and how to get it in more places:
 - **npm (not yet)** — package `casper-tools` v1.4.0 is publish-ready
   (`PUBLISH.md`); npm listing pending human npm credentials. Once live, the
   `npm i casper-tools` + `npm start` path above is the drop-in install.
+- **mcpmarket.com** — [mcpmarket.com/server/casper-tools](
+  https://mcpmarket.com/server/casper-tools) (present but STALE, discovered +
+  verified 2026-09-07): lists author `magiautonomous` with a 19-tool server but
+  a cached 8-tool description ("…JSON inspection, regex testing, URL analysis").
+  UI submit form (browser/account) refresh needed with the copy below.
 - **mcp.directory / mcp.so / Smithery / PulseMCP / mcpservers.org** — not listed
-  yet (verified 2026-09-07). They auto-pull from the official registry or accept
-  a web-form submission.
+  yet (re-verified 2026-09-07 after the registry v1.4.0 republish; still absent).
+  mcp.so 307s to a 404 SPA route, mcp.directory public path 404, PulseMCP API
+  key-gated (404), Smithery is now Arcade.dev (submit form only). They do NOT
+  auto-pull from the official registry — each needs a web-form submission using
+  the kit below.
 
 ### Directory update kit (current as of 2026-09-07)
 
-Same fields for any submit/update form (Glama claim, mcprepository, mcp.so,
-Smithery, PulseMCP):
+Same fields for any submit/update form (Glama claim, mcprepository, mcpmarket,
+mcp.so, Smithery, PulseMCP):
 
 ```
 Server name:  Casper Tools
